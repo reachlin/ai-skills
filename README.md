@@ -52,6 +52,11 @@ None of these skills hardcode API keys, tokens, or webhook URLs — they all loa
 secrets at runtime from a local `.env` file that is never committed. If you
 adapt one of these for your own use, keep that pattern.
 
+## Discuss
+
+Questions, ideas, or want to swap skills with others doing similar things?
+Join the conversation: [reachlin study group Slack](https://reachlinstudygroup.slack.com/archives/C0C14B54JGJ)
+
 ## License
 
 MIT — do whatever you want with these.
