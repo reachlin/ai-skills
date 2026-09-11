@@ -55,7 +55,7 @@ adapt one of these for your own use, keep that pattern.
 ## Discuss
 
 Questions, ideas, or want to swap skills with others doing similar things?
-Join the conversation: [reachlin study group Slack](https://reachlinstudygroup.slack.com/archives/C0C14B54JGJ)
+Join the conversation: [reachlin study group Slack](https://join.slack.com/t/reachlinstudygroup/shared_invite/zt-49fbsxvrr-TuPF8ErtvSreewiFcga7Dw)
 
 ## License
 
