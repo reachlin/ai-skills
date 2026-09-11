@@ -20,7 +20,7 @@ Claude Code picks up skills automatically based on the `description` in each
 
 | Skill | What it does |
 |---|---|
-| [`local-llm`](local-llm) | Delegates simple, high-volume subtasks (classification, extraction, batch rewriting) to a local Ollama model instead of burning cloud tokens on mechanical work. Includes guidance on when delegating makes sense vs. when it doesn't. |
+| [`local-llm`](local-llm) | Delegates simple, high-volume subtasks (classification, extraction, batch rewriting) to a local Ollama model instead of burning cloud tokens on mechanical work. Includes guidance on when delegating makes sense vs. when it doesn't. See the [routing diagram](https://claude.ai/code/artifact/ce6f0723-7d94-461d-a65c-ec2b037dab68). |
 | [`slack-message`](slack-message) | Sends a message to Slack via an incoming webhook, with optional `--user` @-mention. Secrets load from a local `.env`, never hardcoded. |
 | [`claude-backup`](claude-backup) / [`claude-restore`](claude-restore) | Backs up Claude Code skills/settings to a zip on Google Drive (or any synced folder) and restores them safely — comparing content hash first and warning instead of clobbering when the local copy is newer. Useful for keeping two machines in sync without blind overwrites. |
 | [`env-tmux`](env-tmux) | Starts a long-running command in a named tmux session with your `.env` injected, so background processes survive and stay easy to find/attach to later. |
