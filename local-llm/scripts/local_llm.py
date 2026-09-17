@@ -9,12 +9,16 @@ data). For larger data, put it in a file and pass --input-file; its contents
 are appended after the prompt.
 """
 import argparse
+import json
 import sys
+from datetime import datetime, timezone
+from pathlib import Path
 
 import requests
 
 OLLAMA_URL = "http://localhost:11434/api/chat"
 DEFAULT_MODEL = "qwen2.5:7b-instruct"
+USAGE_LOG = Path(__file__).resolve().parent.parent / "usage_log.jsonl"
 
 
 def check_server() -> bool:
@@ -25,7 +29,7 @@ def check_server() -> bool:
         return False
 
 
-def ask(prompt: str, model: str = DEFAULT_MODEL, timeout: int = 120) -> str:
+def ask(prompt: str, model: str = DEFAULT_MODEL, timeout: int = 120) -> dict:
     resp = requests.post(
         OLLAMA_URL,
         json={
@@ -36,7 +40,18 @@ def ask(prompt: str, model: str = DEFAULT_MODEL, timeout: int = 120) -> str:
         timeout=timeout,
     )
     resp.raise_for_status()
-    return resp.json()["message"]["content"]
+    return resp.json()
+
+
+def log_usage(model: str, prompt_tokens: int, response_tokens: int) -> None:
+    entry = {
+        "ts": datetime.now(timezone.utc).isoformat(),
+        "model": model,
+        "prompt_tokens": prompt_tokens,
+        "response_tokens": response_tokens,
+    }
+    with open(USAGE_LOG, "a") as f:
+        f.write(json.dumps(entry) + "\n")
 
 
 def main() -> int:
@@ -60,10 +75,17 @@ def main() -> int:
             prompt = f"{prompt}\n\n{f.read()}"
 
     try:
-        print(ask(prompt, model=args.model))
+        data = ask(prompt, model=args.model)
     except requests.exceptions.RequestException as e:
         print(f"ERROR: request to Ollama failed: {e}", file=sys.stderr)
         return 1
+
+    print(data["message"]["content"])
+    log_usage(
+        args.model,
+        data.get("prompt_eval_count", 0),
+        data.get("eval_count", 0),
+    )
 
     return 0
 

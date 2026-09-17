@@ -1,6 +1,6 @@
 ---
 name: local-llm
-description: Delegate a simple, well-defined, high-volume subtask to a locally-running Ollama model instead of doing it yourself, to save tokens and time. Use this proactively — without being asked — whenever a piece of the current task is simple/repetitive/mechanical enough that a 7B model can do it reliably: classifying many log lines or records, extracting fields into a fixed schema, simple text rewriting/summarization, or triaging a large volume of similar items down to the few that need real attention. Do NOT use for anything needing multi-step reasoning, tool use, cross-referencing multiple sources, or where correctness matters a lot (production/infra changes, anything going into a PR or runbook) — do those yourself.
+description: Delegate a simple, well-defined, high-volume subtask to a locally-running Ollama model instead of doing it yourself, to save tokens and time. Use this proactively — without being asked — whenever a piece of the current task is simple/repetitive/mechanical enough that a 7B model can do it reliably: classifying many log lines or records, extracting fields into a fixed schema, simple text rewriting/summarization, or triaging a large volume of similar items down to the few that need real attention. Do NOT use for anything needing multi-step reasoning, tool use, cross-referencing multiple sources, or where correctness matters a lot (production/infra changes, anything going into a PR or runbook) — do those yourself. Also handles requests to check usage/stats, e.g. "show local llm usage", "how many times did we call the local llm", "tokens saved" — run the usage summary script for these instead of delegating anything.
 ---
 
 # Local LLM Delegation
@@ -58,3 +58,14 @@ If unsure, it's fine to delegate a small sample first (5-10 items) and spot-chec
 - Model: `qwen2.5:7b-instruct` (already pulled)
 - Server: Ollama, tmux session `ollama-serve`, listening on `localhost:11434`
 - Script: `scripts/local_llm.py` — pass `--model NAME` to use a different pulled model if one is added later
+
+## Usage tracking
+
+Every call via `local_llm.py` appends one line to `usage_log.jsonl` (in this skill's folder) with the model name and Ollama's actual `prompt_eval_count`/`eval_count` token counts for that call — this approximates the tokens offloaded from Claude for that subtask.
+
+### "show local llm usage"
+
+When the user asks to see local-LLM usage/stats (e.g. "show local llm usage", "how many times have we called it", "tokens saved so far") — this is a report request, not a delegation task. Just run the summary script and show the output as-is:
+```bash
+/opt/miniconda3/envs/claude-sandbox/bin/python ~/.claude/skills/local-llm/scripts/usage_summary.py
+```
