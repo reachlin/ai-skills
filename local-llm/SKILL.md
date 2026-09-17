@@ -22,6 +22,10 @@ Do it yourself when the task:
 
 If unsure, it's fine to delegate a small sample first (5-10 items) and spot-check the output before running it over the full set.
 
+### Capability score gate
+
+`CAPABILITY.md` (in this skill's folder) tracks a benchmarked 10-level score for the current local model (10 = Sonnet 5 baseline). **Current score: 5/10.** Only blanket-delegate tasks at or below that level — mechanical classification, single/batch structured extraction, and rewriting/summarization that preserves given facts. Two failure modes hold regardless of nominal task "level," per that doc: never delegate arithmetic/calculations, and never delegate severity/impact/judgment calls made under ambiguity — the local model is unreliable at both even when the surrounding task looks simple. Re-check `CAPABILITY.md` if the local model has been upgraded since its last-recorded benchmark date.
+
 ## How to delegate
 
 1. **Check the server is up:**
