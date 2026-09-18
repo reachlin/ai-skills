@@ -1,6 +1,6 @@
 ---
 name: local-llm
-description: Delegate a simple, well-defined, high-volume subtask to a locally-running Ollama model instead of doing it yourself, to save tokens and time. Use this proactively — without being asked — whenever a piece of the current task is simple/repetitive/mechanical enough that a 7B model can do it reliably: classifying many log lines or records, extracting fields into a fixed schema, simple text rewriting/summarization, or triaging a large volume of similar items down to the few that need real attention. Do NOT use for anything needing multi-step reasoning, tool use, cross-referencing multiple sources, or where correctness matters a lot (production/infra changes, anything going into a PR or runbook) — do those yourself. Also handles requests to check usage/stats, e.g. "show local llm usage", "how many times did we call the local llm", "tokens saved" — run the usage summary script for these instead of delegating anything.
+description: Delegate simple, well-defined subtasks to a locally-running Ollama model instead of doing them yourself, to save tokens and time. Use this proactively and liberally — without being asked, and even for a single small item, not just high-volume batches — whenever a piece of the current task is simple/mechanical enough that a 7B model can do it reliably: classifying log lines or records (one or many), extracting fields into a fixed schema, simple text rewriting/summarization/formatting, drafting boilerplate, or triaging items down to the few that need real attention. Do NOT use for anything needing multi-step reasoning, tool use, cross-referencing multiple sources, arithmetic/calculations, judgment calls under ambiguity, or where correctness matters a lot (production/infra changes, anything going into a PR or runbook) — do those yourself. Also handles requests to check usage/stats, e.g. "show local llm usage", "how many times did we call the local llm", "tokens saved" — run the usage summary script for these instead of delegating anything.
 ---
 
 # Local LLM Delegation
@@ -9,18 +9,19 @@ Offload simple, high-volume subtasks to a local Ollama model (`qwen2.5:7b-instru
 
 ## When to delegate vs. do it yourself
 
-Delegate when the task is:
-- **Repetitive at volume** — the same simple operation applied to many items (classify 500 log lines, extract a field from each of 200 records)
-- **Well-defined** — you can write the instruction as a single self-contained prompt with a clear expected output shape (a label, a JSON field, a short rewrite)
-- **Low-stakes** — a wrong answer on one item is cheap to catch/ignore, not something that silently corrupts a result
+Default to delegating. Delegate when the task is:
+- **Well-defined** — you can write the instruction as a single self-contained prompt with a clear expected output shape (a label, a JSON field, a short rewrite, a snippet of boilerplate)
+- **Low-stakes** — a wrong answer is cheap to catch/ignore, not something that silently corrupts a result
 
-Do it yourself when the task:
+Volume doesn't matter — a single small item is worth delegating too, not just large batches. The setup cost of one `local_llm.py` call is low, so don't reserve delegation for high-volume cases only.
+
+Do it yourself only when the task:
 - Requires multi-step reasoning, tool calls, or checking things against other files/systems
 - Needs the item-by-item results to be cross-referenced or reasoned about together (that synthesis step should stay with you — only the mechanical per-item step gets delegated)
 - Touches production, infrastructure, or anything that ends up in a PR, runbook, or incident doc — correctness matters too much here for a 7B model
-- Is a one-off (the setup cost of writing a good prompt isn't worth it for a single item)
+- Involves arithmetic/calculations, or a severity/impact/judgment call under ambiguity — the local model is unreliable at both regardless of how simple the surrounding task looks (see Capability score gate below)
 
-If unsure, it's fine to delegate a small sample first (5-10 items) and spot-check the output before running it over the full set.
+If unsure, it's fine to delegate a small sample first (5-10 items) and spot-check the output before running it over the full set — but "unsure" should lean toward trying delegation, not skipping it.
 
 ### Capability score gate
 

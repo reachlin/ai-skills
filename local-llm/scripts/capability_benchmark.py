@@ -16,7 +16,7 @@ import argparse
 import re
 import sys
 
-from local_llm import ask, check_server, DEFAULT_MODEL
+from local_llm import ask, check_server, log_usage, DEFAULT_MODEL
 
 CASES = [
     # Level 1 - trivial fixed-format lookup/copy
@@ -195,6 +195,7 @@ def main() -> int:
         try:
             data = ask(case["prompt"], model=args.model, timeout=120)
             output = data["message"]["content"]
+            log_usage(args.model, data.get("prompt_eval_count", 0), data.get("eval_count", 0))
         except Exception as e:
             output = f"<ERROR: {e}>"
 
